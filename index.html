@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sports Center — Sơ Đồ Luồng Theo Vai Trò (Role)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Bảng màu giấy ấm dịu mắt (Warm Paper / E-Reader) */
+      :root[data-theme='light'] {
+        --bg: #f7f6f2;
+        --surface: #ffffff;
+        --surface-subtle: #f2f0ea;
+        --surface-hover: #fcfbf9;
+        --border: #e5e3dc;
+        --border-hover: #c5c1b5;
+        --text: #1f2328;
+        --text-muted: #575e66;
+        --text-subtle: #848b94;
+        --accent: #2563eb;
+        --accent-soft: #eef4ff;
+        --screen-bg: #f3f2ed;
+        --screen-text: #454c54;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.06);
+      }
+
+      /* Chế độ tối dịu mắt (Warm Graphite) */
+      :root[data-theme='dark'] {
+        --bg: #18191c;
+        --surface: #202226;
+        --surface-subtle: #26292e;
+        --surface-hover: #282b31;
+        --border: #2e3138;
+        --border-hover: #464b55;
+        --text: #dfe2e6;
+        --text-muted: #9aa0a8;
+        --text-subtle: #6e747d;
+        --accent: #60a5fa;
+        --accent-soft: rgba(96, 165, 250, 0.12);
+        --screen-bg: #282b31;
+        --screen-text: #b5bac1;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.3);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        padding-bottom: 80px;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 36px 24px;
+      }
+
+      /* Header */
+      .header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .header h1 {
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+        margin-bottom: 6px;
+      }
+
+      .header p {
+        font-size: 15px;
+        color: var(--text-muted);
+      }
+
+      .theme-btn {
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-muted);
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .theme-btn:hover {
+        border-color: var(--border-hover);
+        color: var(--text);
+      }
+
+      /* Thống kê nhanh số lượng flow theo từng Role */
+      .role-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      @media (max-width: 860px) {
+        .role-summary-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 520px) {
+        .role-summary-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .role-stat-card {
+        text-align: left;
+        padding: 16px 18px;
+        border-radius: 12px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.15s;
+        box-shadow: var(--shadow);
+      }
+
+      .role-stat-card:hover {
+        border-color: var(--border-hover);
+        background: var(--surface-hover);
+      }
+
+      .role-stat-card.active {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+      }
+
+      .role-stat-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+
+      .role-stat-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .role-stat-count {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      .role-stat-sub {
+        font-size: 12.5px;
+        color: var(--text-muted);
+      }
+
+      /* Thanh công cụ lọc & tìm kiếm */
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 32px;
+      }
+
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .tab {
+        padding: 7px 13px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text-muted);
+        font-family: inherit;
+        font-size: 13.5px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .tab:hover {
+        background: var(--surface-subtle);
+        color: var(--text);
+      }
+
+      .tab.active {
+        background: var(--surface);
+        color: var(--text);
+        border-color: var(--border);
+        font-weight: 600;
+        box-shadow: var(--shadow);
+      }
+
+      .search {
+        width: 260px;
+        max-width: 100%;
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 13.5px;
+        outline: none;
+      }
+
+      .search:focus {
+        border-color: var(--accent);
+      }
+
+      /* Khối từng Role */
+      .role-section {
+        margin-bottom: 44px;
+      }
+
+      .role-header {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px 22px;
+        margin-bottom: 16px;
+      }
+
+      .role-header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+
+      .role-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .role-badge {
+        font-size: 13px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 99px;
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+
+      .role-desc {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+      }
+
+      .role-screens {
+        font-size: 12.5px;
+        color: var(--text-subtle);
+        line-height: 1.6;
+      }
+
+      .role-screens strong {
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      /* Lưới 2 cột thoáng */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+
+      @media (max-width: 740px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .header {
+          flex-direction: column;
+        }
+        .search {
+          width: 100%;
+        }
+      }
+
+      .card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 20px 22px;
+        border-radius: 12px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        text-decoration: none;
+        color: inherit;
+        box-shadow: var(--shadow);
+        transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+      }
+
+      .card:hover {
+        border-color: var(--border-hover);
+        background: var(--surface-hover);
+        box-shadow: var(--shadow-hover);
+      }
+
+      .card-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .card-num {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--text-subtle);
+      }
+
+      .card-screen {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 2px 9px;
+        border-radius: 6px;
+        background: var(--screen-bg);
+        color: var(--screen-text);
+      }
+
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+        margin-bottom: 6px;
+      }
+
+      .card:hover .card-title {
+        color: var(--accent);
+      }
+
+      .card-desc {
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.55;
+      }
+
+      .empty {
+        padding: 48px 20px;
+        text-align: center;
+        color: var(--text-muted);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div>
+          <h1>Sports Center — Danh Mục Luồng Theo Vai Trò (Role)</h1>
+          <p>
+            Chọn từng vai trò bên dưới để xem vai trò đó có bao nhiêu màn hình và tham gia vào những luồng nghiệp vụ nào.
+          </p>
+        </div>
+        <button id="themeBtn" class="theme-btn" type="button">Giao diện: Sáng dịu</button>
+      </header>
+
+      <!-- 4 thẻ tóm tắt 4 Role chính -->
+      <div class="role-summary-grid" id="roleCards">
+        <button class="role-stat-card" data-role="manager" type="button">
+          <div class="role-stat-top">
+            <span class="role-stat-name">1. Manager (Quản lý)</span>
+            <span class="role-stat-count">15 flow</span>
+          </div>
+          <div class="role-stat-sub">18 màn hình quản trị (/admin/*)</div>
+        </button>
+
+        <button class="role-stat-card" data-role="member" type="button">
+          <div class="role-stat-top">
+            <span class="role-stat-name">2. Member (Hội viên)</span>
+            <span class="role-stat-count">12 flow</span>
+          </div>
+          <div class="role-stat-sub">16 màn hình khách hàng (/_member/*)</div>
+        </button>
+
+        <button class="role-stat-card" data-role="receptionist" type="button">
+          <div class="role-stat-top">
+            <span class="role-stat-name">3. Receptionist (Lễ tân)</span>
+            <span class="role-stat-count">10 flow</span>
+          </div>
+          <div class="role-stat-sub">10 màn hình quầy POS (/reception/*)</div>
+        </button>
+
+        <button class="role-stat-card" data-role="coach" type="button">
+          <div class="role-stat-top">
+            <span class="role-stat-name">4. Coach (HLV)</span>
+            <span class="role-stat-count">7 flow</span>
+          </div>
+          <div class="role-stat-sub">7 màn hình giảng dạy (/coach/*)</div>
+        </button>
+      </div>
+
+      <!-- Thanh tab chi tiết & tìm kiếm -->
+      <div class="toolbar">
+        <div id="tabs" class="tabs">
+          <button class="tab active" data-role="all-roles">Tất cả theo Role</button>
+          <button class="tab" data-role="manager">Manager (15)</button>
+          <button class="tab" data-role="member">Member (12)</button>
+          <button class="tab" data-role="receptionist">Lễ tân (10)</button>
+          <button class="tab" data-role="coach">HLV (7)</button>
+          <button class="tab" data-role="common">Chung & Auth (5)</button>
+          <button class="tab" data-role="system">Kiến trúc & DB (6)</button>
+          <button class="tab" data-role="flat-22">Danh sách gốc (22 file)</button>
+        </div>
+        <input id="search" class="search" type="search" placeholder="Tìm màn hình, tên luồng..." />
+      </div>
+
+      <main id="content"></main>
+    </div>
+
+    <script>
+      // 22 file sơ đồ gốc
+      const DIAGRAMS = {
+        '01': {
+          id: '01',
+          file: 'sports-center-overview.html',
+          title: 'Toàn Cảnh Kiến Trúc & Nghiệp Vụ (One-Page Explainer)',
+          defaultScreen: 'Tổng quan dự án',
+          defaultDesc: 'Tóm tắt trên một trang: kiến trúc Monorepo, thanh toán Ví & SePay, phân quyền 4 vai trò và 6 tiến trình tự động.'
+        },
+        '02': {
+          id: '02',
+          file: 'sports-center-system.html',
+          title: 'Kiến Trúc Tổng Thể Hệ Thống',
+          defaultScreen: 'Kiến trúc hệ thống',
+          defaultDesc: 'Kết nối giữa React 19 SPA, Express 5 API, PostgreSQL, Upstash Redis, SePay, Gemini AI và Vercel Blob.'
+        },
+        '03': {
+          id: '03',
+          file: 'checkout-payment-sepay.html',
+          title: 'Báo Giá, Thanh Toán Ví & Đối Soát SePay Webhook',
+          defaultScreen: 'Thanh toán & Hóa đơn',
+          defaultDesc: 'Trình tự báo giá giỏ hàng, khóa chống đặt trùng, trừ Ví nội bộ và đối soát tự động mã chuyển khoản QR.'
+        },
+        '04': {
+          id: '04',
+          file: 'ai-assistant-tools.html',
+          title: 'Trợ Lý AI Gemini & Gọi Hàm Theo Vai Trò',
+          defaultScreen: 'Trợ lý AI',
+          defaultDesc: 'Trình tự trò chuyện với AI, lọc công cụ tra cứu theo đúng vai trò đang đăng nhập và trả lời tự động.'
+        },
+        '05': {
+          id: '05',
+          file: 'auth-activation-rbac.html',
+          title: 'Đăng Ký OTP, Kích Hoạt Nhân Sự (72h), Google OAuth & RBAC',
+          defaultScreen: 'Xác thực & Phân quyền',
+          defaultDesc: 'Luồng đăng ký hội viên, cấp tài khoản nhân viên qua email kích hoạt, xoay vòng Refresh Token và đổi vai trò.'
+        },
+        '06': {
+          id: '06',
+          file: 'account-lifecycle-security.html',
+          title: 'Đăng Nhập Lần Đầu (OTP), Đồng Bộ Đa Tab & 14 Bộ Rate Limit',
+          defaultScreen: 'Bảo mật tài khoản',
+          defaultDesc: 'Tự động gửi OTP đặt mật khẩu lần đầu, đồng bộ đăng xuất giữa các tab trình duyệt và thu hồi lớp khi khóa HLV.'
+        },
+        '07': {
+          id: '07',
+          file: 'frontend-routing-session.html',
+          title: 'Điều Hướng Frontend 4 Vai Trò, Làm Mới Token & Upload Ảnh',
+          defaultScreen: 'Router & Upload',
+          defaultDesc: 'Bảo vệ route theo vai trò, gộp các yêu cầu lỗi 401 để làm mới token một lần duy nhất và tải file lên Cloud.'
+        },
+        '08': {
+          id: '08',
+          file: 'coupon-pos-idempotency.html',
+          title: 'Tối Ưu Mã Giảm Giá, Giữ Chỗ Hóa Đơn QR & Chống Deadlock',
+          defaultScreen: 'Coupon & Giữ chỗ QR',
+          defaultDesc: 'Tự chọn tổ hợp mã giảm giá tốt nhất, giữ chỗ sân/lớp khi đang chờ quét QR tại quầy và khóa bảng theo thứ tự.'
+        },
+        '09': {
+          id: '09',
+          file: 'facility-booking-maintenance.html',
+          title: 'Đặt Sân Lẻ, Gói Sân Theo Tuần, Check-in & Bảo Trì Sân',
+          defaultScreen: 'Đặt sân & Bảo trì',
+          defaultDesc: 'Kiểm tra trùng lịch, áp dụng ưu đãi gói hội viên 3 mức, điểm danh vào cửa tại quầy và dời sân khi bảo trì.'
+        },
+        '10': {
+          id: '10',
+          file: 'training-class-attendance.html',
+          title: 'Mở Lớp, Duyệt Chứng Chỉ HLV, Điểm Danh & Tự Hủy Lớp Thiếu Sĩ Số',
+          defaultScreen: 'Lớp học & Điểm danh',
+          defaultDesc: 'Duyệt hồ sơ chuyên môn HLV, học viên đăng ký lớp, tự động hủy lớp thiếu người trước 24h và điểm danh.'
+        },
+        '11': {
+          id: '11',
+          file: 'coach-registration-evaluations.html',
+          title: 'Ứng Tuyển HLV, Giáo Án AI 2 Cấp, Chấm Điểm Buổi & Cột Mốc',
+          defaultScreen: 'Giáo án & Đánh giá',
+          defaultDesc: 'HLV ứng tuyển dạy lớp nháp, soạn giáo án AI cho cả lớp hoặc từng học viên, chấm điểm buổi và đánh giá giữa/cuối khóa.'
+        },
+        '12': {
+          id: '12',
+          file: 'session-reschedule-receipts.html',
+          title: 'Dời Lịch Buổi Học (Kiểm Trùng 3 Tầng), Thông Báo & Biên Lai PDF',
+          defaultScreen: 'Dời buổi & Biên lai PDF',
+          defaultDesc: 'Kiểm tra trống lịch của cả sân, HLV dạy thay và toàn bộ học viên khi dời buổi học; xuất biên lai PDF.'
+        },
+        '13': {
+          id: '13',
+          file: 'membership-wallet-reconcile.html',
+          title: 'Gói Hội Viên, Tự Động Gia Hạn, Nạp Ví & Đối Soát Ngân Hàng',
+          defaultScreen: 'Hội viên, Ví & Ngân hàng',
+          defaultDesc: 'Mua mới hoặc đổi gói hội viên, tự động trừ Ví gia hạn định kỳ, nạp tiền tại quầy và xử lý giao dịch ngân hàng lệch.'
+        },
+        '14': {
+          id: '14',
+          file: 'catalog-settings-dependencies.html',
+          title: 'Cấu Hình Khung Giờ Hệ Thống & Xóa Bộ Môn 2 Bước Hoàn Tiền',
+          defaultScreen: 'Cấu hình & Danh mục',
+          defaultDesc: 'Kiểm tra lệch lưới giờ của các lịch đặt tương lai khi đổi cấu hình và xác nhận hoàn tiền học phí trước khi xóa bộ môn.'
+        },
+        '15': {
+          id: '15',
+          file: 'support-notification-ops.html',
+          title: 'Phiếu Hỗ Trợ, Gửi Email Hàng Loạt, Nhật Ký Kiểm Toán & Dọn Dẹp',
+          defaultScreen: 'Hỗ trợ & Kiểm toán',
+          defaultDesc: 'Giải quyết yêu cầu hỗ trợ khách hàng, gửi thông báo kèm email nền, ghi lịch sử chỉnh sửa dữ liệu và dọn token cũ.'
+        },
+        '16': {
+          id: '16',
+          file: 'reports-export-cicd.html',
+          title: '6 Báo Cáo Quản Trị, Xuất Excel / PDF, Cắt Ảnh & Đường Ống CI/CD',
+          defaultScreen: 'Báo cáo & Xuất file',
+          defaultDesc: 'Tính công suất lấp đầy sân, tỷ lệ tái tục, xuất file Excel và PDF tiếng Việt, cùng quy trình chạy 70 bài kiểm thử.'
+        },
+        '17': {
+          id: '17',
+          file: 'class-membership-states.html',
+          title: 'Vòng Đời Lớp Học, Buổi Học, HLV Rút Lui & Hoàn Học Phí',
+          defaultScreen: 'Trạng thái Lớp & Buổi học',
+          defaultDesc: 'Các trạng thái từ lớp nháp (DRAFT), chờ duyệt, mở đăng ký (OPEN) đến khi kết thúc hoặc hủy hoàn tiền.'
+        },
+        '18': {
+          id: '18',
+          file: 'invoice-bank-membership.html',
+          title: 'Vòng Đời Hóa Đơn QR, Giao Dịch SePay & Gói Hội Viên',
+          defaultScreen: 'Trạng thái Hóa đơn & Gói',
+          defaultDesc: 'Các trạng thái của hóa đơn thanh toán QR, đối soát giao dịch ngân hàng và hiệu lực gói hội viên.'
+        },
+        '19': {
+          id: '19',
+          file: 'sports-center-schema.html',
+          title: 'ERD Cốt Lõi (1/4): Đơn Hàng Hợp Nhất, Hóa Đơn, Đặt Sân & Lớp Học',
+          defaultScreen: 'CSDL · Phần 1/4',
+          defaultDesc: 'Cấu trúc bảng và khóa ngoại cho nhóm bảng trung tâm: đơn hàng, chi tiết đơn, hóa đơn QR, đặt sân và lớp học.'
+        },
+        '20': {
+          id: '20',
+          file: 'training-wallet-ops-schema.html',
+          title: 'ERD Mở Rộng (2/4): Bảo Trì, Điểm Danh, Giáo Án, Sổ Cái Ví & Ngân Hàng',
+          defaultScreen: 'CSDL · Phần 2/4',
+          defaultDesc: 'Cấu trúc bảng cho lịch bảo trì sân, buổi học, điểm danh, giáo án AI, giao dịch Ví nội bộ và biến động ngân hàng.'
+        },
+        '21': {
+          id: '21',
+          file: 'catalog-membership-admin-schema.html',
+          title: 'ERD Danh Mục (3/4): Bộ Môn, Khóa Học, Chuyên Môn HLV, Gói Sân & Hỗ Trợ',
+          defaultScreen: 'CSDL · Phần 3/4',
+          defaultDesc: 'Cấu trúc bảng cho danh mục bộ môn, khóa đào tạo, chứng chỉ HLV, gói đặt sân định kỳ, gói hội viên và phiếu hỗ trợ.'
+        },
+        '22': {
+          id: '22',
+          file: 'profiles-coupons-reviews-schema.html',
+          title: 'ERD Hồ Sơ & Đánh Giá (4/4): Tài Khoản, 4 Hồ Sơ Vai Trò, Mã Giảm Giá & Cột Mốc',
+          defaultScreen: 'CSDL · Phần 4/4',
+          defaultDesc: 'Cấu trúc bảng cho tài khoản đa vai trò, 4 bảng hồ sơ chuyên biệt, mã giảm giá, chu kỳ gói, ứng tuyển HLV và đánh giá.'
+        }
+      };
+
+      // Phân chia chi tiết theo từng Role (kèm màn hình & mô tả đúng theo góc nhìn của Role đó)
+      const ROLE_GROUPS = [
+        {
+          key: 'manager',
+          title: '1. Vai Trò MANAGER (Quản Lý Trung Tâm)',
+          badge: '15 luồng · 18 màn hình /admin/*',
+          desc: 'Quản trị toàn diện danh mục thể thao, sân bãi, bảo trì, mở lớp, duyệt chứng chỉ/ứng tuyển HLV, đối soát ngân hàng, giải quyết khiếu nại và xuất báo cáo.',
+          screens:
+            '/admin/reports, /admin/sports, /admin/courses, /admin/facilities, /admin/maintenances, /admin/classes, /admin/classes/$classId, /admin/specializations, /admin/memberships, /admin/coupons, /admin/orders, /admin/orders/$orderId, /admin/bank-transactions, /admin/users, /admin/users/$userId, /admin/support, /admin/audit-logs, /admin/settings',
+          flows: [
+            {
+              id: '16',
+              screen: '/admin/reports · /dashboard',
+              roleDesc: 'Xem 6 báo cáo quản trị (doanh thu, công suất lấp đầy sân, tỷ lệ tái tục gói, hiệu suất HLV) và xuất file Excel / PDF tiếng Việt.'
+            },
+            {
+              id: '14',
+              screen: '/admin/sports · /admin/courses · /admin/settings',
+              roleDesc: 'Cấu hình giờ mở/đóng cửa, thời lượng ca sân (kiểm tra lệch lịch đặt tương lai) và xóa bộ môn qua 2 bước xác nhận hoàn học phí.'
+            },
+            {
+              id: '09',
+              screen: '/admin/facilities · /admin/maintenances',
+              roleDesc: 'Quản lý danh sách sân bãi, tạo lịch bảo trì định kỳ/đột xuất; hệ thống tự động tìm sân trống cùng bộ môn để dời hoặc hủy hoàn Ví.'
+            },
+            {
+              id: '10',
+              screen: '/admin/classes · /admin/specializations',
+              roleDesc: 'Mở lớp đào tạo mới, duyệt hoặc từ chối chứng chỉ chuyên môn của HLV, theo dõi sĩ số và danh sách điểm danh các lớp.'
+            },
+            {
+              id: '11',
+              screen: '/admin/classes/$classId',
+              roleDesc: 'Xem danh sách HLV ứng tuyển vào các lớp đang mở tuyển (DRAFT), duyệt chọn HLV chính thức và giám sát giáo án / đánh giá học viên.'
+            },
+            {
+              id: '12',
+              screen: '/admin/classes/$classId · /admin/orders/$orderId',
+              roleDesc: 'Dời lịch buổi học (kiểm tra trống lịch cả sân mới, HLV dạy thay và toàn bộ học viên trong lớp) và tải biên lai PDF đơn hàng.'
+            },
+            {
+              id: '17',
+              screen: '/admin/classes · /admin/classes/$classId',
+              roleDesc: 'Quản lý toàn bộ vòng đời trạng thái lớp học (DRAFT → OPEN → ONGOING → COMPLETED/CANCELLED) và duyệt yêu cầu rút lui của HLV.'
+            },
+            {
+              id: '13',
+              screen: '/admin/memberships · /admin/bank-transactions',
+              roleDesc: 'Thiết lập các hạng gói hội viên (Basic, Silver, Gold, Platinum) và xử lý đối soát thủ công các giao dịch ngân hàng lệch tiền/sai mã.'
+            },
+            {
+              id: '18',
+              screen: '/admin/bank-transactions · /admin/orders',
+              roleDesc: 'Theo dõi vòng đời hóa đơn QR, trạng thái khớp lệnh SePay (MATCHED, NEEDS_REVIEW, IGNORED) và hiệu lực gói hội viên.'
+            },
+            {
+              id: '08',
+              screen: '/admin/coupons · /admin/orders',
+              roleDesc: 'Tạo và quản lý mã giảm giá (phần trăm, số tiền cố định, giới hạn lượt dùng, đối tượng áp dụng) và kiểm tra đơn hàng áp mã.'
+            },
+            {
+              id: '03',
+              screen: '/admin/orders · /admin/orders/$orderId',
+              roleDesc: 'Tra cứu chi tiết toàn bộ đơn hàng hợp nhất (sân lẻ, gói sân, lớp học, hội viên), lịch sử trừ Ví và hóa đơn chuyển khoản.'
+            },
+            {
+              id: '05',
+              screen: '/admin/users · /admin/users/$userId',
+              roleDesc: 'Tạo tài khoản nhân sự mới (gửi link kích hoạt 72h qua email), cấp thêm hoặc thu hồi vai trò (RBAC) cho từng tài khoản.'
+            },
+            {
+              id: '06',
+              screen: '/admin/users/$userId',
+              roleDesc: 'Khóa hoặc đình chỉ tài khoản vi phạm (BANNED / INACTIVE); nếu khóa HLV hệ thống tự động gỡ HLV khỏi các buổi dạy tương lai.'
+            },
+            {
+              id: '15',
+              screen: '/admin/support · /admin/audit-logs',
+              roleDesc: 'Xử lý phiếu hỗ trợ khách hàng, phát thông báo toàn hệ thống kèm gửi email hàng loạt và tra cứu nhật ký kiểm toán (Audit Logs).'
+            },
+            {
+              id: '04',
+              screen: '/dashboard (AI Assistant Widget)',
+              roleDesc: 'Trò chuyện với trợ lý AI Gemini bằng bộ công cụ dành riêng cho Quản lý (tra cứu doanh thu, công suất sân, thống kê vận hành).'
+            }
+          ]
+        },
+        {
+          key: 'member',
+          title: '2. Vai Trò MEMBER (Hội Viên / Khách Hàng)',
+          badge: '12 luồng · 16 màn hình /_member/*',
+          desc: 'Đặt sân lẻ hoặc gói sân định kỳ, đăng ký lớp học, theo dõi giáo án & điểm số cá nhân, mua gói hội viên, quản lý Ví và thanh toán QR.',
+          screens:
+            '/bookings, /cart, /classes, /classes/$classId, /enrollments, /training, /training/$classId, /memberships, /memberships/mine, /wallet, /wallet/top-up, /orders, /orders/$orderId, /schedule, /support, /assistant',
+          flows: [
+            {
+              id: '09',
+              screen: '/bookings · /schedule',
+              roleDesc: 'Tìm sân trống theo bộ môn/khung giờ, đặt sân lẻ (tối đa 2h) hoặc gói sân cố định hàng tuần, hủy lịch trước ≥ 24h để hoàn tiền Ví.'
+            },
+            {
+              id: '03',
+              screen: '/cart · /orders · /invoices/$invoiceId',
+              roleDesc: 'Báo giá giỏ hàng trực tuyến, thanh toán tức thì bằng số dư Ví nội bộ hoặc quét mã VietQR qua SePay.'
+            },
+            {
+              id: '08',
+              screen: '/cart',
+              roleDesc: 'Hệ thống tự động thử mọi tổ hợp mã giảm giá để chọn phương án tiết kiệm nhất cho giỏ hàng và giữ chỗ trong lúc chờ quét QR.'
+            },
+            {
+              id: '10',
+              screen: '/classes · /classes/$classId · /enrollments',
+              roleDesc: 'Xem danh sách lớp đang mở tuyển sinh, đăng ký học, xem điểm danh chuyên cần và nhận hoàn tiền tự động nếu lớp hủy do thiếu sĩ số.'
+            },
+            {
+              id: '11',
+              screen: '/training · /training/$classId · /classes/$classId',
+              roleDesc: 'Xem giáo án cá nhân do HLV biên soạn, điểm số nhận xét từng buổi học, kết quả đánh giá giữa/cuối khóa và gửi đánh giá 1–5 sao.'
+            },
+            {
+              id: '12',
+              screen: '/schedule · /orders/$orderId',
+              roleDesc: 'Nhận thông báo tự động khi buổi học đổi lịch/đổi sân và tải biên lai thanh toán định dạng PDF.'
+            },
+            {
+              id: '17',
+              screen: '/enrollments · /training/$classId',
+              roleDesc: 'Theo dõi trạng thái lớp học đã đăng ký, rút khỏi lớp trước ngày khai giảng để nhận hoàn học phí vào Ví.'
+            },
+            {
+              id: '13',
+              screen: '/memberships · /memberships/mine · /wallet · /wallet/top-up',
+              roleDesc: 'Mua mới, nâng cấp hoặc hạ cấp gói hội viên, bật/tắt tự động gia hạn từ Ví và nạp tiền vào Ví qua mã QR.'
+            },
+            {
+              id: '18',
+              screen: '/memberships/mine · /invoices/$invoiceId',
+              roleDesc: 'Theo dõi trạng thái hóa đơn nạp Ví / mua gói và chu kỳ hiệu lực gói hội viên (ACTIVE, EXPIRED, CANCELLED).'
+            },
+            {
+              id: '04',
+              screen: '/assistant',
+              roleDesc: 'Hỏi trợ lý AI về lịch sân trống, gợi ý lớp học phù hợp, kiểm tra số dư Ví và lịch tập cá nhân.'
+            },
+            {
+              id: '15',
+              screen: '/support · /notifications',
+              roleDesc: 'Gửi phiếu yêu cầu hỗ trợ tới bộ phận chăm sóc khách hàng, nhắn tin phản hồi và nhận thông báo hệ thống.'
+            },
+            {
+              id: '05',
+              screen: '/register · /login · /profile',
+              roleDesc: 'Đăng ký tài khoản hội viên bằng mã OTP email (6 số) hoặc đăng nhập nhanh qua Google OAuth 2.0.'
+            }
+          ]
+        },
+        {
+          key: 'receptionist',
+          title: '3. Vai Trò RECEPTIONIST (Lễ Tân / Thu Ngân Tại Quầy)',
+          badge: '10 luồng · 10 màn hình /reception/*',
+          desc: 'Bán hàng tại quầy (POS), tạo nhanh tài khoản khách vãng lai, check-in khách vào sân, nạp tiền mặt vào Ví hộ khách và hỗ trợ trực tiếp.',
+          screens:
+            '/reception/order, /reception/orders, /reception/orders/$orderId, /reception/checkin, /reception/bookings, /reception/top-up, /reception/members, /reception/members/$memberId, /reception/support, /reception/assistant',
+          flows: [
+            {
+              id: '03',
+              screen: '/reception/order · /reception/orders',
+              roleDesc: 'Tạo đơn hàng tại quầy (POS) cho khách đặt sân, đăng ký lớp hoặc mua gói hội viên; thu tiền mặt, trừ Ví hoặc xuất mã QR.'
+            },
+            {
+              id: '08',
+              screen: '/reception/order',
+              roleDesc: 'Áp mã khuyến mãi tại quầy, chống tạo trùng đơn khi bấm đúp (Idempotency-Key) và giữ chỗ sân/lớp trong 15 phút chờ khách quét QR.'
+            },
+            {
+              id: '09',
+              screen: '/reception/checkin · /reception/bookings',
+              roleDesc: 'Tra cứu mã đặt sân hoặc số điện thoại khách hàng để xác nhận Check-in nhận sân tại quầy lễ tân.'
+            },
+            {
+              id: '13',
+              screen: '/reception/top-up · /reception/members',
+              roleDesc: 'Nhận tiền mặt hoặc quét QR tại quầy để nạp tiền trực tiếp vào Ví nội bộ cho hội viên; tra cứu lịch sử giao dịch của hội viên.'
+            },
+            {
+              id: '12',
+              screen: '/reception/orders/$orderId',
+              roleDesc: 'Xuất và in biên lai thu tiền định dạng PDF tiếng Việt giao cho khách hàng tại quầy.'
+            },
+            {
+              id: '18',
+              screen: '/reception/orders · /invoices/$invoiceId',
+              roleDesc: 'Theo dõi trạng thái thanh toán hóa đơn QR của khách ngay trên màn hình thu ngân.'
+            },
+            {
+              id: '05',
+              screen: '/reception/members · /activate',
+              roleDesc: 'Kích hoạt tài khoản nhân viên lễ tân qua link email 72h và tạo nhanh hồ sơ khách hàng mới ngay tại quầy.'
+            },
+            {
+              id: '06',
+              screen: '/reception/members (Tạo khách vãng lai)',
+              roleDesc: 'Tài khoản khách do Lễ tân tạo tại quầy sẽ được đánh dấu mustChangePassword để tự gửi OTP khi khách tự đăng nhập lần đầu.'
+            },
+            {
+              id: '15',
+              screen: '/reception/support',
+              roleDesc: 'Tiếp nhận, phản hồi và cập nhật trạng thái xử lý các phiếu hỗ trợ của hội viên.'
+            },
+            {
+              id: '04',
+              screen: '/reception/assistant',
+              roleDesc: 'Sử dụng trợ lý AI dành cho Lễ tân để tra cứu nhanh tình trạng sân, thông tin hội viên và quy định dịch vụ.'
+            }
+          ]
+        },
+        {
+          key: 'coach',
+          title: '4. Vai Trò COACH (Huấn Luyện Viên)',
+          badge: '7 luồng · 7 màn hình /coach/*',
+          desc: 'Nộp chứng chỉ chuyên môn, ứng tuyển dạy các lớp mở, soạn giáo án AI cho lớp & từng học viên, điểm danh và chấm điểm đánh giá.',
+          screens:
+            '/coach/schedule, /coach/classes, /coach/classes/$classId, /coach/open-classes, /coach/sessions/$sessionId, /coach/specializations, /coach/assistant',
+          flows: [
+            {
+              id: '10',
+              screen: '/coach/specializations · /coach/sessions/$sessionId',
+              roleDesc: 'Tải lên chứng chỉ chuyên môn chờ Quản lý duyệt và thực hiện điểm danh học viên (Có mặt / Vắng / Có phép) trong từng buổi dạy.'
+            },
+            {
+              id: '11',
+              screen: '/coach/open-classes · /coach/classes/$classId · /coach/sessions/$sessionId',
+              roleDesc: 'Ứng tuyển dạy lớp nháp (DRAFT), dùng Gemini AI tạo giáo án cho cả buổi hoặc riêng từng học viên, chấm điểm buổi (1–10) và đánh giá giữa/cuối khóa.'
+            },
+            {
+              id: '12',
+              screen: '/coach/schedule · /coach/sessions/$sessionId',
+              roleDesc: 'Xem lịch giảng dạy theo tuần, nhận thông báo khi được phân công dạy thay hoặc khi buổi học đổi giờ/đổi sân.'
+            },
+            {
+              id: '17',
+              screen: '/coach/classes/$classId',
+              roleDesc: 'Gửi yêu cầu xin rút khỏi lớp học kèm lý do để Quản lý duyệt và bàn giao lớp cho HLV thay thế.'
+            },
+            {
+              id: '04',
+              screen: '/coach/assistant',
+              roleDesc: 'Trò chuyện với trợ lý AI để tra cứu lịch dạy, danh sách học viên trong lớp và hỗ trợ gợi ý bài tập.'
+            },
+            {
+              id: '05',
+              screen: '/activate · /login · /profile',
+              roleDesc: 'Kích hoạt tài khoản HLV qua email mời của Quản lý và chuyển đổi vai trò nếu vừa là HLV vừa là Hội viên.'
+            },
+            {
+              id: '06',
+              screen: '/profile',
+              roleDesc: 'Bảo mật phiên đăng nhập đa tab và cơ chế tự động bàn giao/thu hồi lớp tương lai nếu tài khoản HLV tạm ngừng hoạt động.'
+            }
+          ]
+        },
+        {
+          key: 'common',
+          title: '5. Luồng Dùng Chung & Xác Thực (Public & Mọi Role)',
+          badge: '5 luồng · 8 màn hình dùng chung',
+          desc: 'Các luồng nền tảng mà mọi người dùng (Manager, Member, Lễ tân, HLV) đều đi qua khi truy cập ứng dụng.',
+          screens:
+            '/, /login, /register, /forgot-password, /activate, /dashboard, /profile, /notifications, /invoices/$invoiceId',
+          flows: [
+            {
+              id: '05',
+              screen: '/login · /register · /activate · /forgot-password',
+              roleDesc: 'Đăng ký OTP, kích hoạt tài khoản nhân sự, đăng nhập Google OAuth, xoay vòng Refresh Token và chuyển đổi vai trò (Active Role).'
+            },
+            {
+              id: '06',
+              screen: '/login · /profile',
+              roleDesc: 'Đăng nhập lần đầu nhận OTP đặt mật khẩu, đồng bộ đăng xuất giữa các tab (BroadcastChannel) và 14 bộ giới hạn tần suất (Rate Limit).'
+            },
+            {
+              id: '07',
+              screen: 'TanStack Router · /profile (Upload Avatar)',
+              roleDesc: 'Route Guards phân luồng 4 phân khu giao diện, tự động làm mới token lỗi 401 (Single-Flight) và cắt/upload ảnh trực tiếp lên Vercel Blob.'
+            },
+            {
+              id: '04',
+              screen: '/dashboard · /assistant',
+              roleDesc: 'Kiến trúc điều phối công cụ AI Gemini tự động giới hạn quyền truy cập dữ liệu theo đúng vai trò đang đăng nhập.'
+            },
+            {
+              id: '15',
+              screen: '/notifications',
+              roleDesc: 'Trung tâm thông báo thời gian thực trong ứng dụng, đánh dấu đã đọc và đồng bộ thông báo qua email.'
+            }
+          ]
+        },
+        {
+          key: 'system',
+          title: '6. Kiến Trúc Tổng Thể & Cơ Sở Dữ Liệu (System & 38 Bảng DB)',
+          badge: '6 sơ đồ · Kiến trúc & Đủ 38 bảng Prisma',
+          desc: 'Bức tranh toàn cảnh kiến trúc kỹ thuật và 4 sơ đồ thực thể liên kết (ERD) bao phủ toàn bộ 38 bảng trong cơ sở dữ liệu.',
+          screens:
+            'apps/web, apps/api, packages/shared, prisma/schema.prisma (38 models · 25 enums)',
+          flows: [
+            { id: '01', screen: 'Toàn cảnh hệ thống', roleDesc: DIAGRAMS['01'].defaultDesc },
+            { id: '02', screen: 'Kiến trúc 4 tầng', roleDesc: DIAGRAMS['02'].defaultDesc },
+            { id: '19', screen: 'ERD · Phần 1/4 (9 bảng)', roleDesc: DIAGRAMS['19'].defaultDesc },
+            { id: '20', screen: 'ERD · Phần 2/4 (10 bảng)', roleDesc: DIAGRAMS['20'].defaultDesc },
+            { id: '21', screen: 'ERD · Phần 3/4 (10 bảng)', roleDesc: DIAGRAMS['21'].defaultDesc },
+            { id: '22', screen: 'ERD · Phần 4/4 (9 bảng)', roleDesc: DIAGRAMS['22'].defaultDesc }
+          ]
+        }
+      ];
+
+      let activeRole = 'all-roles';
+      let query = '';
+
+      const content = document.getElementById('content');
+      const search = document.getElementById('search');
+
+      function syncActiveUI() {
+        document.querySelectorAll('#tabs .tab').forEach((btn) => {
+          btn.classList.toggle('active', btn.getAttribute('data-role') === activeRole);
+        });
+        document.querySelectorAll('#roleCards .role-stat-card').forEach((card) => {
+          card.classList.toggle('active', card.getAttribute('data-role') === activeRole);
+        });
+      }
+
+      function render() {
+        const q = query.toLowerCase();
+
+        // Chế độ xem danh sách 22 file gốc không lặp
+        if (activeRole === 'flat-22') {
+          const allDiagrams = Object.values(DIAGRAMS).filter((d) => {
+            if (!q) return true;
+            return (
+              d.id.includes(q) ||
+              d.title.toLowerCase().includes(q) ||
+              d.defaultDesc.toLowerCase().includes(q) ||
+              d.defaultScreen.toLowerCase().includes(q)
+            );
+          });
+
+          if (allDiagrams.length === 0) {
+            content.innerHTML = `<div class="empty">Không tìm thấy sơ đồ nào khớp với từ khóa.</div>`;
+            return;
+          }
+
+          content.innerHTML = `
+            <section class="role-section">
+              <div class="role-header">
+                <div class="role-header-top">
+                  <div class="role-title">Danh Sách Gốc Đủ 22 File Sơ Đồ (01 – 22)</div>
+                  <span class="role-badge">22 file HTML độc lập</span>
+                </div>
+                <div class="role-desc">Danh sách toàn bộ 22 sơ đồ theo thứ tự đánh số từ 01 đến 22, không lặp lại giữa các vai trò.</div>
+              </div>
+              <div class="grid">
+                ${allDiagrams
+                  .map(
+                    (d) => `
+                  <a class="card" href="./${d.file}" target="_blank" rel="noopener">
+                    <div>
+                      <div class="card-meta">
+                        <span class="card-num">Sơ đồ ${d.id}</span>
+                        <span class="card-screen">${d.defaultScreen}</span>
+                      </div>
+                      <div class="card-title">${d.title}</div>
+                      <p class="card-desc">${d.defaultDesc}</p>
+                    </div>
+                  </a>
+                `
+                  )
+                  .join('')}
+              </div>
+            </section>
+          `;
+          return;
+        }
+
+        // Chế độ xem theo Role
+        const groupsToShow =
+          activeRole === 'all-roles'
+            ? ROLE_GROUPS
+            : ROLE_GROUPS.filter((g) => g.key === activeRole);
+
+        const htmlSections = groupsToShow
+          .map((group) => {
+            const matchedFlows = group.flows.filter((f) => {
+              if (!q) return true;
+              const d = DIAGRAMS[f.id];
+              return (
+                f.id.includes(q) ||
+                d.title.toLowerCase().includes(q) ||
+                f.roleDesc.toLowerCase().includes(q) ||
+                f.screen.toLowerCase().includes(q) ||
+                group.title.toLowerCase().includes(q)
+              );
+            });
+
+            if (matchedFlows.length === 0) return '';
+
+            return `
+              <section class="role-section">
+                <div class="role-header">
+                  <div class="role-header-top">
+                    <div class="role-title">${group.title}</div>
+                    <span class="role-badge">${group.badge}</span>
+                  </div>
+                  <div class="role-desc">${group.desc}</div>
+                  <div class="role-screens"><strong>Các màn hình (Routes):</strong> ${group.screens}</div>
+                </div>
+                <div class="grid">
+                  ${matchedFlows
+                    .map((f) => {
+                      const d = DIAGRAMS[f.id];
+                      return `
+                        <a class="card" href="./${d.file}" target="_blank" rel="noopener">
+                          <div>
+                            <div class="card-meta">
+                              <span class="card-num">Sơ đồ ${d.id}</span>
+                              <span class="card-screen">${f.screen}</span>
+                            </div>
+                            <div class="card-title">${d.title}</div>
+                            <p class="card-desc">${f.roleDesc}</p>
+                          </div>
+                        </a>
+                      `;
+                    })
+                    .join('')}
+                </div>
+              </section>
+            `;
+          })
+          .filter(Boolean);
+
+        if (htmlSections.length === 0) {
+          content.innerHTML = `<div class="empty">Không tìm thấy luồng hay màn hình nào khớp với từ khóa.</div>`;
+          return;
+        }
+
+        content.innerHTML = htmlSections.join('');
+      }
+
+      // Sự kiện bấm vào 4 thẻ Role lớn phía trên
+      document.querySelectorAll('#roleCards .role-stat-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          const clickedRole = card.getAttribute('data-role');
+          activeRole = activeRole === clickedRole ? 'all-roles' : clickedRole;
+          syncActiveUI();
+          render();
+        });
+      });
+
+      // Sự kiện bấm vào các tab
+      document.querySelectorAll('#tabs .tab').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          activeRole = btn.getAttribute('data-role');
+          syncActiveUI();
+          render();
+        });
+      });
+
+      search.addEventListener('input', (e) => {
+        query = e.target.value.trim();
+        render();
+      });
+
+      // Chuyển đổi giao diện Sáng dịu / Tối dịu
+      const themeBtn = document.getElementById('themeBtn');
+      const saved = localStorage.getItem('sc-flow-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      themeBtn.textContent = saved === 'light' ? 'Giao diện: Sáng dịu' : 'Giao diện: Tối dịu';
+
+      themeBtn.addEventListener('click', () => {
+        const cur = document.documentElement.getAttribute('data-theme');
+        const next = cur === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('sc-flow-theme', next);
+        themeBtn.textContent = next === 'light' ? 'Giao diện: Sáng dịu' : 'Giao diện: Tối dịu';
+      });
+
+      render();
+    </script>
+  </body>
+</html>
